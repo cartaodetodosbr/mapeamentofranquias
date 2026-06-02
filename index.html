@@ -771,11 +771,13 @@ function collectData() {
         gv('p'+i+'n'), gv('p'+i+'c'), gv('p'+i+'o'),
         gv('p'+i+'s'), gv('p'+i+'a'),
         tools, gv('p'+i+'fd'), inds, gv('p'+i+'id'), bens, gv('p'+i+'bd'),
-        gv('p'+i+'px'), gv('p'+i+'re')
+        gv('p'+i+'px'), gv('p'+i+'re'),
+        '','','','','','','',''
       ]);
     }
   } else {
     rows.push([...base,'Não',
+      '','','','','','','','','','','','','',
       getChips(document.getElementById('mtvG')), gv('mtvJ'),
       getChips(document.getElementById('impG')), gv('impJ'),
       S.futInt||'', gv('futJ'),
