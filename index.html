@@ -358,26 +358,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <div class="fc">
-    <div class="fg" style="margin-bottom:0">
-      <label class="lbl-destaque">Como você avalia o nível de maturidade digital da sua franquia? <span class="req">*</span></label>
-      <p style="font-size:.87rem;color:var(--gd);line-height:1.75;margin:.5rem 0 1rem">
-        Considere fatores como:<br>
-        • Uso de tecnologia nos processos do dia a dia<br>
-        • Utilização de ferramentas digitais<br>
-        • Uso de dados para tomada de decisão<br>
-        • Existência de automações<br>
-        • Uso de Inteligência Artificial<br>
-        • Integração entre sistemas
-      </p>
-      <select id="f_mat">
-        <option value="">Selecione uma opção</option>
-        <option>Muito baixa</option><option>Baixa</option><option>Média</option>
-        <option>Alta</option><option>Muito alta</option>
-      </select>
-      <span class="err-hint" id="hf_mat">Obrigatório.</span>
-    </div>
-  </div>
 </div>
 <!-- ─── P2 ─── -->
 <div class="pg" id="p2">
@@ -391,6 +371,26 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       Ela pode envolver Inteligência Artificial, automações, integração entre sistemas, uso de dados, dashboards, formulários digitais ou qualquer solução tecnológica que facilite o trabalho da equipe.
     </p>
   </div>
+
+  <div class="fc" style="margin-bottom:1.25rem">
+    <label class="lbl-destaque">Como você avalia o nível de maturidade digital da sua franquia? <span class="req">*</span></label>
+    <p style="font-size:.87rem;color:var(--gd);line-height:1.75;margin:.5rem 0 1rem">
+      Considere fatores como:<br>
+      • Uso de tecnologia nos processos do dia a dia<br>
+      • Utilização de ferramentas digitais<br>
+      • Uso de dados para tomada de decisão<br>
+      • Existência de automações<br>
+      • Uso de Inteligência Artificial<br>
+      • Integração entre sistemas
+    </p>
+    <select id="maturidadeDigital" required>
+      <option value="">Selecione uma opção</option>
+      <option>Muito baixa</option><option>Baixa</option><option>Média</option>
+      <option>Alta</option><option>Muito alta</option>
+    </select>
+    <span class="err-hint" id="hMat">Campo obrigatório.</span>
+  </div>
+
 
   <div class="fc" style="margin-bottom:1.25rem">
     <p style="font-size:.97rem;font-weight:700;color:var(--pd);margin-bottom:.75rem">Sua franquia utiliza alguma ferramenta digital, automação ou Inteligência Artificial no dia a dia?</p>
@@ -693,7 +693,7 @@ function gNext(){
   
   // P1: franquia identification
   if(p===1){
-    const fields=[['f_reg','hf_reg'],['f_cid','hf_cid'],['f_nome','hf_nome'],['f_tempo','hf_tempo'],['f_mat','hf_mat']];
+    const fields=[['f_reg','hf_reg'],['f_cid','hf_cid'],['f_nome','hf_nome'],['f_tempo','hf_tempo']];
     let ok=true;
     const reg=document.getElementById('f_reg');
     if(!reg.value){fErr(reg,document.getElementById('hf_reg'),true);ok=false;}else fErr(reg,document.getElementById('hf_reg'),false);
@@ -701,7 +701,7 @@ function gNext(){
       const est=document.getElementById('f_est');
       if(!est.value){fErr(est,document.getElementById('hf_est'),true);ok=false;}else fErr(est,document.getElementById('hf_est'),false);
     }
-    [['f_cid','hf_cid'],['f_nome','hf_nome'],['f_tempo','hf_tempo'],['f_mat','hf_mat']].forEach(([fid,hid])=>{
+    [['f_cid','hf_cid'],['f_nome','hf_nome'],['f_tempo','hf_tempo']].forEach(([fid,hid])=>{
       const el=document.getElementById(fid),hint=document.getElementById(hid);
       if(!el.value.trim()){fErr(el,hint,true);ok=false;}else fErr(el,hint,false);
     });
@@ -713,8 +713,11 @@ function gNext(){
   if(p===2){
     const mat=document.getElementById('maturidadeDigital');
     const hMat=document.getElementById('hMat');
+    const fmat=document.getElementById('f_mat');
+    const hfmat=document.getElementById('hf_mat');
     let ok=true;
-    if(!mat.value){fErr(mat,hMat,true);ok=false;}else fErr(mat,hMat,false);
+    if(fmat&&!fmat.value){fErr(fmat,hfmat,true);ok=false;}else if(fmat) fErr(fmat,hfmat,false);
+    if(mat&&!mat.value){fErr(mat,hMat,true);ok=false;}else if(mat) fErr(mat,hMat,false);
     if(S.hasInit===null){document.getElementById('v2').classList.add('on');ok=false;}
     else document.getElementById('v2').classList.remove('on');
     if(S.hasInit===true&&!S.qty){sV('v2','Informe quantas iniciativas existem.');ok=false;}
