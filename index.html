@@ -69,7 +69,7 @@ h1,h2,h3,h4,h5{font-family:'Sora',sans-serif}
 .info-box p{font-size:.9rem;color:var(--gd);line-height:1.7;margin-bottom:.875rem}
 .info-box p:last-child{margin-bottom:0}
 .info-box strong{color:var(--pd);font-weight:700}
-.info-box blockquote{font-style:italic;font-size:.88rem;color:var(--pd);border-left:2px solid var(--t);padding:.4rem .875rem;margin:.5rem 0;line-height:1.65;background:var(--tp);border-radius:0 6px 6px 0}
+.info-box blockquote{font-family:'DM Sans',sans-serif;font-style:italic;font-size:.88rem;color:var(--pd);border-left:2px solid var(--t);padding:.4rem .875rem;margin:.5rem 0;line-height:1.65;background:var(--tp);border-radius:0 6px 6px 0}
 .side-panel{background:linear-gradient(155deg,var(--pd) 0%,var(--pm) 100%);border-radius:var(--rxl);padding:1.75rem;color:#fff;overflow:hidden;word-break:break-word}
 .side-panel h3{font-size:1rem;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
 .hw{display:flex;align-items:flex-start;gap:12px;margin-bottom:1rem}
@@ -292,12 +292,17 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="intro-header">
       <div class="hero-tag"><i class="ti ti-building-store"></i> Mapeamento Digital · Franquias TODOS</div>
       <h1>Mapeamento de iniciativas de<br><em>Inteligência Artificial e Transformação Digital</em> para Franquias</h1>
-      <p class="hero-sub">Mapeamento das iniciativas digitais e projetos de inovação das Unidades de Negócios do Grupo TODOS Internacional.</p>
+      <p class="hero-sub">Mapeamento das iniciativas digitais e projetos de inovação das Franquias do Grupo TODOS Internacional.</p>
     </div>
     <div class="intro-cols">
       <div class="info-box">
-        <p><strong>Objetivo do levantamento:</strong> Mapear todas as iniciativas com uso de Inteligência Artificial para promover a cultura de transformação digital das franquias do Grupo TODOS Internacional.</p>
-        <p><strong>Importância estratégica:</strong> As informações apoiarão a construção do Plano Estratégico de Transformação Digital e Inteligência Artificial, identificando oportunidades de compartilhamento de boas práticas, ganho de produtividade e expansão de iniciativas entre as franquias.</p>
+        <p><strong>Objetivo do levantamento:</strong> Mapear todas as iniciativas com uso de Inteligência Artificial para promover a cultura de transformação digital das Franquias do Grupo TODOS Internacional.</p>
+        <p><strong>Importância estratégica:</strong> Como parte da estratégia de Pessoas e Cultura para este biênio, temos como OKR de Liderança:</p>
+        <blockquote>"Garantir que 100% das lideranças se tornem agentes de transformação digital, promovendo e consolidando uma cultura muito forte e saudável."</blockquote>
+        <p>Dentre outras estratégias para avançarmos nessa direção, estabelecemos como KR:</p>
+        <blockquote>"Ter 75% das lideranças formadas com nível ativo (=2) de liderança transformadora."</blockquote>
+        <p>Mais do que concluir uma formação, esse indicador busca garantir que os conteúdos aprendidos estejam sendo efetivamente colocados em prática pelas lideranças no dia a dia das franquias, fortalecendo comportamentos alinhados à transformação cultural que desejamos consolidar.</p>
+        <p><strong>Como serão analisados:</strong> Os dados serão analisados para identificarmos avanços, oportunidades de desenvolvimento e boas práticas que possam fortalecer ainda mais nossa cultura de liderança transformadora.</p>
       </div>
       <div class="side-panel">
         <h3><i class="ti ti-map"></i>Como funciona?</h3>
@@ -321,8 +326,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <label>Regional <span class="req">*</span></label>
         <select id="f_reg" onchange="onRegiao()">
           <option value="">Selecione...</option>
-          <option>Norte</option><option>Nordeste</option><option>Centro Oeste</option>
-          <option>Sudeste</option><option>Sul</option><option>Outro</option>
+          <option>Regional SPMG</option>
+          <option>Regional Costa Leste</option>
+          <option>Regional Interior</option>
+          <option>Regional Centro Sul</option>
+          <option>Regional Equatorial</option>
         </select>
         <span class="err-hint" id="hf_reg">Obrigatório.</span>
         <div id="sf_reg" style="display:none;margin-top:.5rem">
@@ -367,10 +375,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="val" id="v2"><i class="ti ti-alert-circle"></i><span>Preencha todos os campos e selecione uma das opções para continuar.</span></div>
 
   <div class="fc" style="margin-bottom:1.25rem">
-    <p style="font-size:.97rem;font-weight:700;color:var(--pd);margin-bottom:.75rem">O que é uma iniciativa digital?</p>
+    <p style="font-size:.97rem;font-weight:700;color:var(--pd);margin-bottom:.75rem">O que é um líder que promove a transformação digital?</p>
     <p style="font-size:.9rem;color:var(--gd);line-height:1.75;margin-bottom:0">
-      Uma iniciativa digital é qualquer ação, ferramenta, automação ou utilização de tecnologia que ajude a tornar processos mais rápidos, eficientes ou inteligentes.<br><br>
-      Ela pode envolver Inteligência Artificial, automações, integração entre sistemas, uso de dados, dashboards, formulários digitais ou qualquer solução tecnológica que facilite o trabalho da equipe.
+      O líder Agente de Transformação Digital para o Grupo TODOS Internacional é aquele que impulsiona a evolução do negócio por meio da adoção consciente de tecnologias, da tomada de decisão baseada em dados e da mobilização das pessoas para novas formas de trabalhar, promovendo inovação, eficiência e uma cultura de aprendizado contínuo.<br><br>
+      Mais do que utilizar ferramentas digitais, ele influencia comportamentos, lidera mudanças e transforma desafios em oportunidades de crescimento para o negócio e para as pessoas.
     </p>
   </div>
 
@@ -416,7 +424,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="cc" onclick="selInit(true)" id="cY">
       <div class="ci yes"><i class="ti ti-rocket"></i></div>
       <h3>Sim, utilizamos</h3>
-      <p>Nossa franquia já utiliza alguma ferramenta digital, automação ou Inteligência Artificial.</p>
+      <p>Nossa franquia já utiliza uma ou mais iniciativas digitais, automação ou Inteligência Artificial.</p>
     </div>
     <div class="cc" onclick="selInit(false)" id="cN">
       <div class="ci no"><i class="ti ti-map-pin"></i></div>
@@ -487,7 +495,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="nxt">
       <p style="font-size:.85rem;color:var(--gm);font-weight:700;margin-bottom:.875rem">Próximos passos:</p>
       <div class="nxt-item"><i class="ti ti-chart-dots" style="color:var(--t);font-size:18px;flex-shrink:0"></i><span> Os dados serão consolidados pelo time de Pessoas e Cultura da TODOS Empreendimentos.</span></div>
-      <div class="nxt-item"><i class="ti ti-users" style="color:var(--t);font-size:18px;flex-shrink:0"></i><span>O Resultado será apresentado aos heads de Pessoas e Cultura das UDNs.</span></div>
+      <div class="nxt-item"><i class="ti ti-users" style="color:var(--t);font-size:18px;flex-shrink:0"></i><span>O Resultado será apresentado aos Diretores de cada Franquia.</span></div>
     </div>
     <!-- 5. QIA note: centralizado, texto ajustado -->
     <div class="qia-note">
@@ -662,10 +670,10 @@ function buildAccs(n){
 }
 
 function mkAcc(i){
-  const cats=['Automação de Processos','Inteligência Artificial','Analytics','Power BI','RH Digital','Dados','Operações','Financeiro','Atendimento','Outro'];
+  const cats=['Automação de Processos','Inteligência Artificial','Power BI / Dados','Outro'];
   const stats=['Planejamento','Em desenvolvimento','Implantação','Concluído / Em funcionamento'];
   const tools=['Power BI','Python','VBA','SQL','Excel','Power Automate','ChatGPT','Copilot','APIs','Outro'];
-  const inds=['Horas economizadas','Redução de custos','Produtividade','Qualidade','Experiência do cliente','Redução de erros','Outro'];
+  const inds=['Horas economizadas','Redução de custos','Aumento de Produtividade','Aumento de Qualidade','Experiência do cliente','Redução de erros','Outro'];
   const bens=['Economia de tempo','Economia financeira','Melhor tomada de decisão','Escalabilidade','Redução de retrabalho','Melhor experiência do cliente','Outro'];
   return `<div class="acc" id="acc${i}">
     <div class="ah" onclick="tA(${i})">
@@ -929,22 +937,21 @@ async function submitData(){
 
 // ─── REGIONAL / ESTADOS ─────────────────────────────────────────────────────
 const ESTADOS_MAP={
-  'Norte':        ['AC','AM','AP','PA','RO','RR','TO'],
-  'Nordeste':     ['AL','BA','CE','MA','PB','PE','PI','RN','SE'],
-  'Centro Oeste': ['DF','GO','MT','MS'],
-  'Sudeste':      ['ES','MG','RJ','SP'],
-  'Sul':          ['PR','RS','SC']
+  'Regional SPMG':        ['SP','MG'],
+  'Regional Costa Leste': ['RJ','ES','BA','SE','AL','PE','PB','RN','CE','PI','MA','PA','AP','AM','RR','RO','AC','TO'],
+  'Regional Interior':    ['GO','MT','MS','DF','PR','SC','RS'],
+  'Regional Centro Sul':  ['SP','MG','RJ','ES','PR','SC','RS','GO','MT','MS','DF'],
+  'Regional Equatorial':  ['AM','PA','AP','RR','AC','RO','TO','MA','PI','CE','RN','PB','PE','AL','SE','BA']
 };
+// Todos os estados disponíveis para seleção
+const TODOS_ESTADOS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 function onRegiao(){
   const reg=document.getElementById('f_reg').value;
   const sel=document.getElementById('f_est');
-  const sf=document.getElementById('sf_reg');
-  if(sf) sf.style.display=reg==='Outro'?'block':'none';
   sel.innerHTML='<option value="">Selecione...</option>';
-  if(ESTADOS_MAP[reg]){
-    ESTADOS_MAP[reg].forEach(e=>{const o=document.createElement('option');o.value=e;o.textContent=e;sel.appendChild(o);});
-  } else if(reg==='Outro'){
-    sel.innerHTML='<option value="">N/A</option>';
+  if(reg){
+    const estados=TODOS_ESTADOS||['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+    estados.forEach(e=>{const o=document.createElement('option');o.value=e;o.textContent=e;sel.appendChild(o);});
   }
 }
 
