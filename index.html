@@ -429,7 +429,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="cc" onclick="selInit(false)" id="cN">
       <div class="ci no"><i class="ti ti-map-pin"></i></div>
       <h3>Ainda não utilizamos</h3>
-      <p>Nossa franquia ainda não utiliza iniciativas digitais, automações ou Inteligência Artificial em seus processos.</p>
+      <p>Nossa franquia ainda não utiliza ferramentas digitais, automações ou Inteligência Artificial em seus processos.</p>
     </div>
   </div>
 
@@ -890,7 +890,7 @@ function collectData(){
   const getChips=id=>[...document.getElementById(id).querySelectorAll('.chip.on')].map(c=>c.textContent).join(', ');
   const ts=new Date().toLocaleString('pt-BR');
   const reg=gv('f_reg')+(gv('f_reg')==='Outro'&&gv('f_regOutro')?' ('+gv('f_regOutro')+')':'');
-  const base=[ts,reg,gv('f_est'),gv('f_cid'),gv('f_nome'),gv('f_tempo'),gv('f_mat')];
+  const base=[ts,reg,gv('f_est'),gv('f_cid'),gv('f_nome'),gv('f_tempo'),gv('maturidadeDigital')];
   const rows=[];
   if(S.hasInit){
     const n=S.qty===5?5:S.qty;
