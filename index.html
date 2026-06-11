@@ -357,6 +357,17 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <span class="err-hint" id="hf_nome">Obrigatório.</span>
       </div>
       <div class="fg">
+        <label>Área de Negócio <span class="req">*</span></label>
+        <select id="f_tipo">
+          <option value="">Selecione...</option>
+          <option>CDT</option>
+          <option>AS</option>
+        </select>
+        <span class="err-hint" id="hf_tipo">Obrigatório.</span>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg">
         <label>Tempo de Operação <span class="req">*</span></label>
         <select id="f_tempo">
           <option value="">Selecione...</option>
@@ -762,7 +773,7 @@ function gNext(){
       const est=document.getElementById('f_est');
       if(!est.value){fErr(est,document.getElementById('hf_est'),true);ok=false;}else fErr(est,document.getElementById('hf_est'),false);
     }
-    [['f_cid','hf_cid'],['f_nome','hf_nome'],['f_tempo','hf_tempo']].forEach(([fid,hid])=>{
+    [['f_cid','hf_cid'],['f_nome','hf_nome'],['f_tipo','hf_tipo'],['f_tempo','hf_tempo']].forEach(([fid,hid])=>{
       const el=document.getElementById(fid),hint=document.getElementById(hid);
       if(!el.value.trim()){fErr(el,hint,true);ok=false;}else fErr(el,hint,false);
     });
@@ -909,7 +920,8 @@ function collectData(){
         getAccChips(1),gv('p'+i+'id'),
         getAccChips(2),gv('p'+i+'bd'),
         pxVal,gv('p'+i+'re'),gv('p'+i+'rem'),gv('p'+i+'rw'),
-        '','','','','','','',''
+        '','','','','','','','',
+        gv('f_tipo')
       ]);
     }
   } else {
@@ -918,7 +930,8 @@ function collectData(){
       getChips('mtvG'),gv('mtvJ'),
       getChips('impG'),gv('impJ'),
       S.fut||'',gv('futJ'),
-      getChips('apoG'),gv('apoJ')
+      getChips('apoG'),gv('apoJ'),
+      gv('f_tipo')
     ]);
   }
   return rows;
