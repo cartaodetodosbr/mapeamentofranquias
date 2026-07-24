@@ -939,7 +939,16 @@ function collectData(){
   const getChips=id=>[...document.getElementById(id).querySelectorAll('.chip.on')].map(c=>c.textContent).join(', ');
   const ts=new Date().toLocaleString('pt-BR');
   const reg=gv('f_reg')+(gv('f_reg')==='Outro'&&gv('f_regOutro')?' ('+gv('f_regOutro')+')':'');
-  const base=[ts,reg,gv('f_est'),gv('f_cid'),gv('f_nome'),gv('f_tempo'),gv('maturidadeDigital')];
+  const base={
+    data_hora_local:ts,
+    regional:reg,
+    estado:gv('f_est'),
+    cidade:gv('f_cid'),
+    nome_franquia:gv('f_nome'),
+    tempo_operacao:gv('f_tempo'),
+    maturidade_digital:gv('maturidadeDigital'),
+    tipo_franquia:gv('f_tipo')
+  };
   const rows=[];
   if(S.hasInit){
     const n=S.qty;
@@ -951,32 +960,70 @@ function collectData(){
         return chips[idx]?[...chips[idx].querySelectorAll('.chip.on')].map(c=>c.textContent).join(', '):'';
       };
       const pxVal=gv('p'+i+'px')==='Outro'?(gv('p'+i+'pxOutro')||'Outro'):gv('p'+i+'px');
-      rows.push([...base,'Sim',
-        gv('p'+i+'n'),gv('p'+i+'c'),gv('p'+i+'o'),
-        gv('p'+i+'s'),(gv('p'+i+'a')==='Outro'?(gv('p'+i+'aOutro')||'Outro'):gv('p'+i+'a')),
-        getAccChips(0),gv('p'+i+'fd'),
-        getAccChips(1),gv('p'+i+'id'),
-        getAccChips(2),gv('p'+i+'bd'),
-        pxVal,gv('p'+i+'re'),gv('p'+i+'rem'),gv('p'+i+'rw'),
-        '','','','','','','','',
-        gv('f_tipo')
-      ]);
+      const indicadorVal=gv('p'+i+'a')==='Outro'?(gv('p'+i+'aOutro')||'Outro'):gv('p'+i+'a');
+      rows.push({
+        ...base,
+        possui_iniciativa:'Sim',
+        nome_projeto:gv('p'+i+'n'),
+        categoria:gv('p'+i+'c'),
+        objetivo:gv('p'+i+'o'),
+        status_atual:gv('p'+i+'s'),
+        indicador_operacional:indicadorVal,
+        ferramentas_chips:getAccChips(0),
+        ferramentas_desc:gv('p'+i+'fd'),
+        indicadores_chips:getAccChips(1),
+        indicadores_desc:gv('p'+i+'id'),
+        beneficios_chips:getAccChips(2),
+        beneficios_desc:gv('p'+i+'bd'),
+        proximo_estagio:pxVal,
+        responsavel:gv('p'+i+'re'),
+        responsavel_email:gv('p'+i+'rem'),
+        responsavel_whatsapp:gv('p'+i+'rw'),
+        motivos_chips:'',
+        motivos_justificativa:'',
+        impedimentos_chips:'',
+        impedimentos_justificativa:'',
+        interesse_futuro:'',
+        interesse_futuro_justificativa:'',
+        apoio_chips:'',
+        apoio_justificativa:''
+      });
     }
   } else {
-    rows.push([...base,'Não',
-      '','','','','','','','','','','','','','','',
-      getChips('mtvG'),gv('mtvJ'),
-      getChips('impG'),gv('impJ'),
-      S.fut||'',gv('futJ'),
-      getChips('apoG'),gv('apoJ'),
-      gv('f_tipo')
-    ]);
+    rows.push({
+      ...base,
+      possui_iniciativa:'Não',
+      nome_projeto:'',
+      categoria:'',
+      objetivo:'',
+      status_atual:'',
+      indicador_operacional:'',
+      ferramentas_chips:'',
+      ferramentas_desc:'',
+      indicadores_chips:'',
+      indicadores_desc:'',
+      beneficios_chips:'',
+      beneficios_desc:'',
+      proximo_estagio:'',
+      responsavel:'',
+      responsavel_email:'',
+      responsavel_whatsapp:'',
+      motivos_chips:getChips('mtvG'),
+      motivos_justificativa:gv('mtvJ'),
+      impedimentos_chips:getChips('impG'),
+      impedimentos_justificativa:gv('impJ'),
+      interesse_futuro:S.fut||'',
+      interesse_futuro_justificativa:gv('futJ'),
+      apoio_chips:getChips('apoG'),
+      apoio_justificativa:gv('apoJ')
+    });
   }
   return rows;
 }
 
 
 async function submitData(){
+  // TODO: substituir pela HTTP POST URL do novo Fluxo 1 "Portal Franquias - Nova Iniciativa" (SharePoint)
   const WEBHOOK_URL='https://defaulte93279240f9745ba871f4a124f3343.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a9f776e01c414e27b203cf036c2c8a09/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ORJZwUhJq3j9h9n_aGHKTkhNR75bkzMxEsU_78rloR8';
   const rows=collectData();
   document.getElementById('subOverlay').classList.add('on');
