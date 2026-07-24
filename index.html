@@ -446,13 +446,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div id="qtyDiv" style="display:none">
     <div class="fc">
-      <h4 style="font-size:.97rem;font-weight:700;color:var(--pd);margin-bottom:.75rem">Quantas iniciativas sua franquia possui atualmente?</h4>
-      <div class="qf" id="qF">
-        <div class="qp" onclick="selQ(1,this)">1</div>
-        <div class="qp" onclick="selQ(2,this)">2</div>
-        <div class="qp" onclick="selQ(3,this)">3</div>
-        <div class="qp" onclick="selQ(4,this)">4</div>
-        <div class="qp" onclick="selQ(5,this)">5 ou mais</div>
+      <h4 style="font-size:.97rem;font-weight:700;color:var(--pd);margin-bottom:.75rem">Quantidade de iniciativas <span class="req">*</span></h4>
+      <div class="fr s1">
+        <div class="fg" style="max-width:200px">
+          <input type="number" id="qtyInput" min="1" max="50" placeholder="Ex.: 3"
+            oninput="onQtyInput(this)"
+            style="font-size:1.1rem;font-weight:600;text-align:center">
+          <span class="err-hint" id="hQtyInput">Informe um número entre 1 e 50.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -566,6 +567,11 @@ function togCargoOutro(selId, divId){
   const d=document.getElementById(divId);
   if(d) d.style.display=(v==='Outro')?'block':'none';
 }
+function togIndicador(selId,divId){
+  const v=document.getElementById(selId).value;
+  const d=document.getElementById(divId);
+  if(d) d.style.display=(v==='Outro')?'block':'none';
+}
 
 let leaderCount=0;
 function addLeader(){
@@ -647,6 +653,11 @@ function onMaturidade(){
 }
 
 function selInit(h){
+  if(!h){
+    const qi=document.getElementById('qtyInput');
+    if(qi){qi.value='';fErr(qi,document.getElementById('hQtyInput'),false);}
+    S.qty=0;
+  }
   const mat=document.getElementById('maturidadeDigital')?.value||'';
   const muitoBaixa=mat==='Muito baixa (Nenhuma iniciativa digital implementada)';
   if(h===true&&muitoBaixa){
@@ -660,11 +671,16 @@ function selInit(h){
   document.getElementById('v2').classList.remove('on');
 }
 
-function selQ(n,el){
-  S.qty=n;
-  document.querySelectorAll('#qF .qp').forEach(p=>p.classList.remove('sel'));
-  el.classList.add('sel');
-  buildAccs(n===5?5:n);
+function onQtyInput(el){
+  const raw=parseInt(el.value,10);
+  if(!el.value||isNaN(raw)||raw<1||raw>50){
+    S.qty=0;
+    fErr(el,document.getElementById('hQtyInput'),true);
+    return;
+  }
+  fErr(el,document.getElementById('hQtyInput'),false);
+  S.qty=raw;
+  buildAccs(raw);
 }
 
 function sFut(el,v){
@@ -695,9 +711,22 @@ function mkAcc(i){
     <div class="ab">
       <div class="fr"><div class="fg"><label>Nome do Projeto <span class="req">*</span></label><input id="p${i}n" oninput="updT(${i})" placeholder="Ex.: Automação da emissão de relatórios de RH"><span class="err-hint" id="hp${i}n">Campo obrigatório.</span></div>
       <div class="fg"><label>Categoria <span class="req">*</span></label><select id="p${i}c"><option value="">Selecione...</option>${cats.map(c=>`<option>${c}</option>`).join('')}</select><span class="err-hint" id="hp${i}c">Campo obrigatório.</span></div></div>
-      <div class="fr s1"><div class="fg"><label>Objetivo do Projeto <span class="req">*</span></label><textarea id="p${i}o" placeholder="Ex.: Reduzir tempo gasto com consolidação manual de indicadores."></textarea><span class="err-hint" id="hp${i}o">Campo obrigatório.</span></div></div>
+      <div class="fr s1"><div class="fg"><label>Objetivo do Projeto/Iniciativa <span class="req">*</span></label><textarea id="p${i}o" placeholder="Detalhe ao máximo o objetivo desta iniciativa: o que está sendo feito, qual problema resolve, como impacta o negócio e quais resultados são esperados. (mínimo 100 caracteres)" minlength="100" style="min-height:90px"></textarea><span class="err-hint" id="hp${i}o">Campo obrigatório — mínimo 100 caracteres.</span></div></div>
       <div class="fr"><div class="fg"><label>Status Atual <span class="req">*</span></label><select id="p${i}s"><option value="">Selecione...</option>${stats.map(s=>`<option>${s}</option>`).join('')}</select><span class="err-hint" id="hp${i}s">Campo obrigatório.</span></div>
-      <div class="fg"><label>Área Impactada <span class="req">*</span></label><input id="p${i}a" placeholder="Ex.: RH, Financeiro, Operações"><span class="err-hint" id="hp${i}a">Campo obrigatório.</span></div></div>
+      <div class="fg"><label>Indicador Operacional Impactado <span class="req">*</span></label>
+        <select id="p${i}a" onchange="togIndicador('p${i}a','p${i}aOutroDiv')">
+          <option value="">Selecione...</option>
+          <option>Vendas</option>
+          <option>Retenção</option>
+          <option>Adimplência</option>
+          <option>Cashback</option>
+          <option>Reputação</option>
+          <option>Outro</option>
+        </select>
+        <div id="p${i}aOutroDiv" style="display:none;margin-top:.5rem">
+          <input id="p${i}aOutro" placeholder="Descreva o indicador operacional impactado...">
+        </div>
+        <span class="err-hint" id="hp${i}a">Campo obrigatório.</span></div></div>
       <div class="fg"><label>Ferramentas Utilizadas <span class="req">*</span></label>
         <div class="chips">${tools.map(t=>`<div class="chip" onclick="tC(this)">${t}</div>`).join('')}</div>
         <textarea id="p${i}fd" placeholder="Ex.: Utilizamos Python para automação e Power BI para visualização..." style="margin-top:7px"></textarea><span class="err-hint" id="hp${i}fd">Campo obrigatório.</span></div>
@@ -797,7 +826,13 @@ function gNext(){
     if(!mat.value){fErr(mat,hMat,true);ok=false;}else fErr(mat,hMat,false);
     if(S.hasInit===null){document.getElementById('v2').classList.add('on');ok=false;}
     else document.getElementById('v2').classList.remove('on');
-    if(S.hasInit===true&&!S.qty){sV('v2','Informe quantas iniciativas existem.');ok=false;}
+    if(S.hasInit===true&&!S.qty){
+      const qEl=document.getElementById('qtyInput');
+      fErr(qEl,document.getElementById('hQtyInput'),true);
+      sV('v2','Informe a quantidade de iniciativas.');ok=false;
+    } else if(S.hasInit===true){
+      fErr(document.getElementById('qtyInput'),document.getElementById('hQtyInput'),false);
+    }
     if(!ok)return;
     hV('v2');S.page=3;showPg(3);return;
   }
@@ -806,7 +841,7 @@ function gNext(){
   if(p===3){
     if(S.hasInit){
       // Validate all accordion fields
-      const n=S.qty===5?5:S.qty;
+      const n=S.qty;
       let ok=true;let firstBadAcc=-1;
       for(let i=1;i<=n;i++){
         const fields=[
@@ -818,8 +853,11 @@ function gNext(){
         fields.forEach(f=>{
           const el=document.getElementById(f.id);
           const hint=document.getElementById('h'+f.id);
-          if(el&&!el.value.trim()){fErr(el,hint,true);ok=false;accBad=true;}
-          else if(el)fErr(el,hint,false);
+          if(!el) return;
+          const val=el.value.trim();
+          const tooShort=f.id===`p${i}o`&&val.length>0&&val.length<100;
+          if(!val||tooShort){fErr(el,hint,true);ok=false;accBad=true;}
+          else fErr(el,hint,false);
         });
         if(accBad&&firstBadAcc===-1){firstBadAcc=i;}
       }
@@ -874,9 +912,9 @@ function buildRev(){
   <div class="rs"><div class="rh"><h3><i class="ti ti-chart-bar" style="color:var(--t)"></i> Iniciativas Digitais</h3><button class="ebtn" onclick="gEdit(2)"><i class="ti ti-edit"></i> Editar</button></div>
     <div class="rrow"><span class="rl">Maturidade digital</span><span class="rv">${mat||'—'}</span></div>
     <div class="rrow"><span class="rl">Possui iniciativas?</span><span class="rv">${S.hasInit?'✅ Sim':'❌ Ainda não'}</span></div>
-    ${S.hasInit?`<div class="rrow"><span class="rl">Quantidade</span><span class="rv">${S.qty===5?'5 ou mais':S.qty}</span></div>`:''}</div>`;
+    ${S.hasInit?`<div class="rrow"><span class="rl">Quantidade</span><span class="rv">${S.qty}</span></div>`:''}</div>`;
   if(S.hasInit){
-    const n=S.qty===5?5:S.qty;
+    const n=S.qty;
     const gvl=id=>{const el=document.getElementById(id);return el?el.value||'—':'—';};
     for(let i=1;i<=n;i++){
       h+=`<div class="rs"><div class="rh"><h3><i class="ti ti-briefcase" style="color:var(--t)"></i> Projeto ${i}${gvl('p'+i+'n')&&gvl('p'+i+'n')!=='—'?' – '+gvl('p'+i+'n'):''}</h3><button class="ebtn" onclick="gEdit(3)"><i class="ti ti-edit"></i> Editar</button></div>
@@ -904,7 +942,7 @@ function collectData(){
   const base=[ts,reg,gv('f_est'),gv('f_cid'),gv('f_nome'),gv('f_tempo'),gv('maturidadeDigital')];
   const rows=[];
   if(S.hasInit){
-    const n=S.qty===5?5:S.qty;
+    const n=S.qty;
     for(let i=1;i<=n;i++){
       const getAccChips=(idx)=>{
         const acc=document.getElementById('acc'+i);
@@ -915,7 +953,7 @@ function collectData(){
       const pxVal=gv('p'+i+'px')==='Outro'?(gv('p'+i+'pxOutro')||'Outro'):gv('p'+i+'px');
       rows.push([...base,'Sim',
         gv('p'+i+'n'),gv('p'+i+'c'),gv('p'+i+'o'),
-        gv('p'+i+'s'),gv('p'+i+'a'),
+        gv('p'+i+'s'),(gv('p'+i+'a')==='Outro'?(gv('p'+i+'aOutro')||'Outro'):gv('p'+i+'a')),
         getAccChips(0),gv('p'+i+'fd'),
         getAccChips(1),gv('p'+i+'id'),
         getAccChips(2),gv('p'+i+'bd'),
