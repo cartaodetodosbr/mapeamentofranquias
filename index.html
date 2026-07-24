@@ -1023,8 +1023,7 @@ function collectData(){
 
 
 async function submitData(){
-  // TODO: substituir pela HTTP POST URL do novo Fluxo 1 "Portal Franquias - Nova Iniciativa" (SharePoint)
-  const WEBHOOK_URL='https://defaulte93279240f9745ba871f4a124f3343.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a9f776e01c414e27b203cf036c2c8a09/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ORJZwUhJq3j9h9n_aGHKTkhNR75bkzMxEsU_78rloR8';
+  const WEBHOOK_URL='https://defaulte93279240f9745ba871f4a124f3343.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/23/workflows/91a1a2c5543d4bbaa0d044cb27b1729b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7hWOeA_XfiNDECKY3xW1lNg2c8RhT4fALzEOGrQR-Bs';
   const rows=collectData();
   document.getElementById('subOverlay').classList.add('on');
   try{
