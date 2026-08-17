@@ -234,6 +234,23 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .qia-note strong{font-size:1.05rem;font-weight:800;display:block;line-height:1.2}
 .qia-note span{font-size:.88rem;opacity:.9;line-height:1.4}
 
+.ac-wrap{position:relative}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--t);border-top:none;border-radius:0 0 var(--r) var(--r);max-height:220px;overflow-y:auto;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.ac-item{padding:9px 14px;font-size:.9rem;cursor:pointer;color:var(--pd)}
+.ac-item:hover,.ac-item.ac-active{background:var(--tp);color:var(--p)}
+.ac-item strong{color:var(--p)}
+.ac-none{padding:9px 14px;font-size:.88rem;color:var(--gm);font-style:italic}
+.ac-wrap input.err{border-color:var(--danger,#c0392b)}
+.pot-opts{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.pot-opt{border:1.5px solid var(--gl);border-radius:var(--r);padding:12px 16px;cursor:pointer;transition:border-color .15s,background .15s}
+.pot-opt:hover{border-color:var(--t);background:var(--tp)}
+.pot-opt.sel{border-color:var(--p);background:var(--tp)}
+.pot-label{font-size:.95rem;font-weight:700;color:var(--pd);margin-bottom:3px}
+.pot-desc{font-size:.85rem;color:var(--gd);line-height:1.55}
+.case-block{background:var(--w);border-radius:var(--rl);padding:1.25rem 1.4rem;border-left:3px solid var(--t);margin-bottom:1.25rem}
+.case-block-title{font-size:.97rem;font-weight:700;color:var(--pd);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.char-hint{font-size:.78rem;color:var(--gm);margin-top:3px}
+.char-hint.warn{color:var(--danger,#c0392b)}
 /* SUBMIT */
 .submit-overlay{display:none;position:fixed;inset:0;background:rgba(0,50,40,.6);z-index:500;align-items:center;justify-content:center}
 .submit-overlay.on{display:flex}
@@ -278,7 +295,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="pconn" id="c2"></div>
     <div class="pstep"><div class="pdot" id="d3">4</div><div class="plbl" id="l3">Detalhes</div></div>
     <div class="pconn" id="c3"></div>
-    <div class="pstep"><div class="pdot" id="d4">5</div><div class="plbl" id="l4">Revisão</div></div>
+    <div class="pstep"><div class="pdot" id="d4" style="display:none">5</div><div class="plbl" id="l4" style="display:none">Case</div></div>
+    <div class="pconn" id="c4" style="display:none"></div>
+    <div class="pstep"><div class="pdot" id="d5">5</div><div class="plbl" id="l5">Revisão</div></div>
     <div class="pconn" id="c4"></div>
     <div class="pstep"><div class="pdot" id="d5">✓</div><div class="plbl" id="l5">Conclusão</div></div>
   </div>
@@ -310,7 +329,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="hw"><div class="hn">2</div><p>Informe se utiliza ferramentas digitais, automações ou Inteligência Artificial.</p></div>
         <div class="hw"><div class="hn">3</div><p>Descreva seus projetos ou desafios.</p></div>
         <div class="hw"><div class="hn">4</div><p>Revise e envie.</p></div>
-        <div class="priv"><i class="ti ti-shield-check"></i>Informações confidenciais, uso estratégico interno.</div>
       </div>
     </div>
   </div>
@@ -326,11 +344,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <label>Regional <span class="req">*</span></label>
         <select id="f_reg" onchange="onRegiao()">
           <option value="">Selecione...</option>
-          <option>Regional SPMG</option>
-          <option>Regional Costa Leste</option>
-          <option>Regional Interior</option>
-          <option>Regional Centro Sul</option>
-          <option>Regional Equatorial</option>
+          <option value="SAO PAULO MINAS">Regional SPMG</option>
+          <option value="COSTA LESTE">Regional Costa Leste</option>
+          <option value="INTERIOR">Regional Interior</option>
+          <option value="CENTRO SUL">Regional Centro Sul</option>
+          <option value="EQUATORIAL">Regional Equatorial</option>
         </select>
         <span class="err-hint" id="hf_reg">Obrigatório.</span>
         <div id="sf_reg" style="display:none;margin-top:.5rem">
@@ -353,8 +371,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="fr">
       <div class="fg">
         <label>Nome da Franquia <span class="req">*</span></label>
-        <input id="f_nome" placeholder="Ex.: TODOS Belo Horizonte Centro">
-        <span class="err-hint" id="hf_nome">Obrigatório.</span>
+        <div class="ac-wrap" id="acWrap">
+          <input id="f_nome_input" autocomplete="off"
+            placeholder="Digite para buscar a franquia..."
+            oninput="acSearch(this.value)"
+            onkeydown="acKey(event)"
+            onfocus="acSearch(this.value)">
+          <input type="hidden" id="f_nome">
+          <div class="ac-list" id="acList" style="display:none"></div>
+        </div>
+        <span class="err-hint" id="hf_nome">Selecione uma franquia da lista para continuar.</span>
       </div>
       <div class="fg">
         <label>Área de Negócio <span class="req">*</span></label>
@@ -492,6 +518,96 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 </div>
 
+<!-- ─── P4 CASE ─── -->
+<div class="pg" id="p4case">
+  <div class="fc">
+    <div class="info-box" style="margin-bottom:1.5rem">
+      <p><strong>🌟 Sua iniciativa poderá fazer parte da Biblioteca de Iniciativas Digitais.</strong><br>
+      Para que outras franquias consigam reproduzi-la, responda às perguntas abaixo.</p>
+    </div>
+    <div class="case-block">
+      <div class="case-block-title"><i class="ti ti-flag" style="color:var(--t)"></i> Situação</div>
+      <div class="fc" style="margin-bottom:1rem">
+        <label>Qual situação motivou a iniciativa? <span class="req">*</span></label>
+        <textarea id="cSit" placeholder="Descreva a situação ou problema que motivou o desenvolvimento desta iniciativa..." oninput="charCount(this,'hcSit','ccSit')"></textarea>
+        <div class="char-hint" id="ccSit">0 / mínimo 100 caracteres</div>
+        <span class="err-hint" id="hcSit">Digite pelo menos 100 caracteres para continuar.</span>
+      </div>
+      <div class="fc" style="margin-bottom:1rem">
+        <label>Como essa situação impactava a operação? <span class="req">*</span></label>
+        <textarea id="cImp" placeholder="Descreva como esse problema afetava o dia a dia da operação..." oninput="charCount(this,'hcImp','ccImp')"></textarea>
+        <div class="char-hint" id="ccImp">0 / mínimo 100 caracteres</div>
+        <span class="err-hint" id="hcImp">Digite pelo menos 100 caracteres para continuar.</span>
+      </div>
+      <div class="fc" style="margin-bottom:.5rem">
+        <label>A iniciativa requer investimentos? <span class="req">*</span></label>
+        <select id="cInvSel" onchange="togCaseInv()">
+          <option value="">Selecione...</option>
+          <option>Sim</option>
+          <option>Não</option>
+        </select>
+        <span class="err-hint" id="hcInvSel">Campo obrigatório.</span>
+      </div>
+      <div id="cInvDiv" style="display:none;margin-top:.75rem">
+        <label>Quais investimentos são necessários? <span class="req">*</span></label>
+        <textarea id="cInv" placeholder="Descreva os investimentos necessários..." oninput="charCount(this,'hcInv','ccInv')"></textarea>
+        <div class="char-hint" id="ccInv">0 / mínimo 100 caracteres</div>
+        <span class="err-hint" id="hcInv">Digite pelo menos 100 caracteres para continuar.</span>
+      </div>
+    </div>
+    <div class="case-block">
+      <div class="case-block-title"><i class="ti ti-tool" style="color:var(--t)"></i> Implantação</div>
+      <div class="fc" style="margin-bottom:1rem">
+        <label>Como a iniciativa foi implementada? <span class="req">*</span></label>
+        <textarea id="cImpl" placeholder="Descreva o processo de implementação: etapas, cronograma, como foi realizada a mudança..." oninput="charCount(this,'hcImpl','ccImpl')"></textarea>
+        <div class="char-hint" id="ccImpl">0 / mínimo 100 caracteres</div>
+        <span class="err-hint" id="hcImpl">Digite pelo menos 100 caracteres para continuar.</span>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Ferramentas utilizadas <span class="req">*</span></label><input id="cTools" placeholder="Ex.: Power BI, Excel, Power Automate..."><span class="err-hint" id="hcTools">Campo obrigatório.</span></div>
+        <div class="fg"><label>Áreas envolvidas <span class="req">*</span></label><input id="cAreas" placeholder="Ex.: Operações, Financeiro, Atendimento..."><span class="err-hint" id="hcAreas">Campo obrigatório.</span></div>
+      </div>
+    </div>
+    <div class="case-block">
+      <div class="case-block-title"><i class="ti ti-chart-line" style="color:var(--t)"></i> Resultados</div>
+      <div class="fc" style="margin-bottom:1rem">
+        <label>Principais benefícios obtidos <span class="req">*</span></label>
+        <textarea id="cBen" placeholder="Descreva os principais benefícios percebidos após a implementação..." oninput="charCount(this,'hcBen','ccBen')"></textarea>
+        <div class="char-hint" id="ccBen">0 / mínimo 100 caracteres</div>
+        <span class="err-hint" id="hcBen">Digite pelo menos 100 caracteres para continuar.</span>
+      </div>
+      <div class="fc">
+        <label>Resultados mensuráveis <span style="font-size:.75rem;color:var(--gm);font-weight:400">(opcional)</span></label>
+        <textarea id="cMens" placeholder="Ex.: redução de 30% no tempo de consolidação, aumento de 15% nas vendas..."></textarea>
+      </div>
+    </div>
+    <div class="case-block">
+      <div class="case-block-title"><i class="ti ti-bulb" style="color:var(--t)"></i> Recomendações para Replicação</div>
+      <div class="fc" style="margin-bottom:1rem">
+        <label>Quais cuidados outra franquia deve ter? <span class="req">*</span></label>
+        <textarea id="cCuid" placeholder="Descreva os principais pontos de atenção para quem for replicar esta iniciativa..." oninput="charCount(this,'hcCuid','ccCuid')"></textarea>
+        <div class="char-hint" id="ccCuid">0 / mínimo 100 caracteres</div>
+        <span class="err-hint" id="hcCuid">Digite pelo menos 100 caracteres para continuar.</span>
+      </div>
+      <div class="fc">
+        <label>Existe algum pré-requisito importante? <span class="req">*</span></label>
+        <textarea id="cPreq" placeholder="Ex.: acesso ao Power BI, ter um responsável de TI, possuir determinado sistema..." oninput="charCount(this,'hcPreq','ccPreq')"></textarea>
+        <div class="char-hint" id="ccPreq">0 / mínimo 100 caracteres</div>
+        <span class="err-hint" id="hcPreq">Digite pelo menos 100 caracteres para continuar.</span>
+      </div>
+    </div>
+    <div class="case-block">
+      <div class="case-block-title"><i class="ti ti-paperclip" style="color:var(--t)"></i> Materiais de Apoio <span style="font-size:.8rem;font-weight:400;color:var(--gm)">(opcional)</span></div>
+      <div class="fc">
+        <label>Links, documentos ou referências <span style="font-size:.75rem;color:var(--gm);font-weight:400">(opcional)</span></label>
+        <textarea id="cMat" placeholder="Cole aqui links ou descreva materiais que possam ajudar outra franquia a replicar esta iniciativa..."></textarea>
+      </div>
+    </div>
+    <div id="v4c" class="val-msg"><i class="ti ti-alert-circle"></i><span>Preencha todos os campos obrigatórios.</span></div>
+  </div>
+</div>
+
+
 <!-- ─── P4 ─── -->
 <div class="pg" id="p4">
   <div class="sh"><div class="tag">Etapa 4 de 4</div><h2>Revisão das Informações</h2><p>Verifique os dados antes de enviar. Você pode voltar e editar qualquer etapa.</p></div>
@@ -571,6 +687,46 @@ function togIndicador(selId,divId){
   const v=document.getElementById(selId).value;
   const d=document.getElementById(divId);
   if(d) d.style.display=(v==='Outro')?'block':'none';
+}
+
+function selPot(i,val,el){
+  // Set hidden input value
+  const hidden=document.getElementById('p'+i+'pot');
+  if(hidden) hidden.value=val;
+  // Visual selection
+  document.querySelectorAll('#p'+i+'potOpts .pot-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  // Clear err-hint
+  fErr(hidden,document.getElementById('hp'+i+'pot'),false);
+  // Show/hide progress step for case
+  const hasAlto=[...Array(S.qty||0)].some((_,j)=>{
+    const h=document.getElementById('p'+(j+1)+'pot');
+    return h&&h.value==='Alto';
+  });
+  const d4=document.getElementById('d4');
+  const l4=document.getElementById('l4');
+  const c4=document.getElementById('c4');
+  if(d4){d4.style.display=hasAlto?'flex':'none';}
+  if(l4){l4.style.display=hasAlto?'block':'none';}
+  if(c4){c4.style.display=hasAlto?'block':'none';}
+}
+
+function charCount(el,hintId,countId){
+  const len=el.value.trim().length;
+  const hint=document.getElementById(hintId);
+  const counter=document.getElementById(countId);
+  if(counter){
+    const rem=Math.max(0,100-len);
+    counter.textContent=rem>0?`${len} / mínimo 100 caracteres (faltam ${rem})`:`${len} caracteres ✅`;
+    counter.className='char-hint'+(rem>0?' warn':'');
+  }
+  if(len>=100){fErr(el,hint,false);}
+}
+
+function togCaseInv(){
+  const v=document.getElementById('cInvSel').value;
+  const d=document.getElementById('cInvDiv');
+  if(d) d.style.display=(v==='Sim')?'block':'none';
 }
 
 let leaderCount=0;
@@ -713,7 +869,7 @@ function mkAcc(i){
       <div class="fg"><label>Categoria <span class="req">*</span></label><select id="p${i}c"><option value="">Selecione...</option>${cats.map(c=>`<option>${c}</option>`).join('')}</select><span class="err-hint" id="hp${i}c">Campo obrigatório.</span></div></div>
       <div class="fr s1"><div class="fg"><label>Objetivo do Projeto/Iniciativa <span class="req">*</span></label><textarea id="p${i}o" placeholder="Detalhe ao máximo o objetivo desta iniciativa: o que está sendo feito, qual problema resolve, como impacta o negócio e quais resultados são esperados. (mínimo 100 caracteres)" minlength="100" style="min-height:90px"></textarea><span class="err-hint" id="hp${i}o">Campo obrigatório — mínimo 100 caracteres.</span></div></div>
       <div class="fr"><div class="fg"><label>Status Atual <span class="req">*</span></label><select id="p${i}s"><option value="">Selecione...</option>${stats.map(s=>`<option>${s}</option>`).join('')}</select><span class="err-hint" id="hp${i}s">Campo obrigatório.</span></div>
-      <div class="fg"><label>Indicador Operacional Impactado <span class="req">*</span></label>
+      <div class="fg"><label>Indicador Operacional Relacionado <span class="req">*</span></label>
         <select id="p${i}a" onchange="togIndicador('p${i}a','p${i}aOutroDiv')">
           <option value="">Selecione...</option>
           <option>Vendas</option>
@@ -742,6 +898,29 @@ function mkAcc(i){
         <div class="fg"><label>E-mail do Responsável <span class="req">*</span></label><input type="email" id="p${i}rem" placeholder="Ex.: responsavel@todos.com.br"><span class="err-hint" id="hp${i}rem">Campo obrigatório.</span></div>
         <div class="fg"><label>WhatsApp do Responsável <span style="font-size:.75rem;color:var(--gm);font-weight:400">(opcional)</span></label><input type="tel" id="p${i}rw" placeholder="Ex.: (11) 99999-9999"></div>
       </div>
+      <div class="fr s1">
+        <div class="fg">
+          <label class="lbl-destaque">Qual é o potencial de replicação desta iniciativa? <span class="req">*</span></label>
+          <p style="font-size:.87rem;color:var(--gd);line-height:1.65;margin:.4rem 0 .6rem"><em>Você acredita que esta iniciativa pode ser aplicada em outras franquias e gerar benefícios semelhantes?</em></p>
+          <p style="font-size:.87rem;color:var(--pd);font-weight:600;margin-bottom:.75rem">Sua resposta ajudará a identificar iniciativas que podem servir de inspiração e ser replicadas por outras franquias.</p>
+          <div class="pot-opts" id="p${i}potOpts">
+            <div class="pot-opt" onclick="selPot(${i},'Alto',this)">
+              <div class="pot-label"><strong>Alto</strong></div>
+              <div class="pot-desc">Pode ser aplicada em outras franquias com pouca ou nenhuma adaptação.</div>
+            </div>
+            <div class="pot-opt" onclick="selPot(${i},'Médio',this)">
+              <div class="pot-label"><strong>Médio</strong></div>
+              <div class="pot-desc">Pode ser aplicada em outras franquias, mas pode exigir algumas adaptações.</div>
+            </div>
+            <div class="pot-opt" onclick="selPot(${i},'Baixo',this)">
+              <div class="pot-label"><strong>Baixo</strong></div>
+              <div class="pot-desc">É muito específica para a realidade desta franquia ou depende de condições locais.</div>
+            </div>
+          </div>
+          <input type="hidden" id="p${i}pot">
+          <span class="err-hint" id="hp${i}pot">Selecione o potencial de replicação.</span>
+        </div>
+      </div>
     </div>
   </div>`;
 }
@@ -758,15 +937,19 @@ function updProg(n){
     else if(i===n){d.classList.add('active');l.classList.add('active');}
     if(i<5){const c=document.getElementById('c'+i);if(c)c.classList.toggle('done',i<n);}
   }
-  document.getElementById('pgI').textContent=['Etapa 1 de 5','Etapa 2 de 5','Etapa 3 de 5','Etapa 4 de 5','Etapa 5 de 5','Concluído'][n]||'';
+  const pgLabels={'0':'Etapa 1 de 5','1':'Etapa 2 de 5','2':'Etapa 3 de 5','3':'Etapa 4 de 5','4c':'Etapa 5 de 5 (Case)','4':'Etapa 5 de 5','5':'Concluído'};
+  document.getElementById('pgI').textContent=pgLabels[String(n)]||''
 }
 
 function showPg(n){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.getElementById('p'+n).classList.add('on');
-  document.getElementById('bBack').style.display=n>0?'flex':'none';
-  document.getElementById('bNext').style.display=n<5?'flex':'none';
+  // p4case uses string id, not numeric
+  const pgId = n==='4c' ? 'p4case' : 'p'+n;
+  document.getElementById(pgId).classList.add('on');
+  document.getElementById('bBack').style.display=(n>0||n==='4c')?'flex':'none';
+  document.getElementById('bNext').style.display=(n<5||n==='4c')?'flex':'none';
   if(n===5)document.getElementById('navBar').style.display='none';
+  if(n==='4c'){const c=document.getElementById('p4case');if(c)c.classList.add('on');}
   updProg(n);
   if(n===3){
     const pY=document.getElementById('pY');
@@ -802,9 +985,18 @@ function gNext(){
       const est=document.getElementById('f_est');
       if(!est.value){fErr(est,document.getElementById('hf_est'),true);ok=false;}else fErr(est,document.getElementById('hf_est'),false);
     }
-    [['f_cid','hf_cid'],['f_nome','hf_nome'],['f_tipo','hf_tipo'],['f_tempo','hf_tempo']].forEach(([fid,hid])=>{
+    // Validate autocomplete franquia (must be selected from list)
+    const nomeHidden=document.getElementById('f_nome');
+    const nomeInput=document.getElementById('f_nome_input');
+    const nomeHint=document.getElementById('hf_nome');
+    if(!nomeHidden.value||!acSelected){
+      fErr(nomeInput,nomeHint,true);
+      nomeHint.textContent='Selecione uma franquia da lista para continuar.';
+      ok=false;
+    } else fErr(nomeInput,nomeHint,false);
+    [['f_tipo','hf_tipo'],['f_tempo','hf_tempo']].forEach(([fid,hid])=>{
       const el=document.getElementById(fid),hint=document.getElementById(hid);
-      if(!el.value.trim()){fErr(el,hint,true);ok=false;}else fErr(el,hint,false);
+      if(!el||!el.value.trim()){fErr(el,hint,true);ok=false;}else fErr(el,hint,false);
     });
     // Validate extra leaders funcao (same pattern as responsável)
     for(let i=1;i<=leaderCount;i++){
@@ -847,7 +1039,8 @@ function gNext(){
         const fields=[
           {id:`p${i}n`},{id:`p${i}c`},{id:`p${i}o`},
           {id:`p${i}s`},{id:`p${i}a`},{id:`p${i}fd`},
-          {id:`p${i}id`},{id:`p${i}bd`},{id:`p${i}px`},{id:`p${i}re`},{id:`p${i}rem`}
+          {id:`p${i}id`},{id:`p${i}bd`},{id:`p${i}px`},{id:`p${i}re`},{id:`p${i}rem`},
+          {id:`p${i}pot`}
         ];
         let accBad=false;
         fields.forEach(f=>{
@@ -889,13 +1082,66 @@ function gNext(){
       if(!ok){document.getElementById('vN').classList.add('on');return;}
       document.getElementById('vN').classList.remove('on');
     }
+    // Check if any initiative has Alto potential → show case page
+    if(S.hasInit){
+      const hasAlto=[...Array(S.qty)].some((_,j)=>{
+        const el=document.getElementById('p'+(j+1)+'pot');
+        return el&&el.value==='Alto';
+      });
+      if(hasAlto){S.page='4c';showPg('4c');return;}
+    }
     S.page=4;showPg(4);return;
   }
-  
+
+  // P4c: case details (only shown when Alto selected)
+  if(p==='4c'){
+    const textFields=[
+      {id:'cSit',hid:'hcSit'},{id:'cImp',hid:'hcImp'},
+      {id:'cImpl',hid:'hcImpl'},{id:'cBen',hid:'hcBen'},
+      {id:'cCuid',hid:'hcCuid'},{id:'cPreq',hid:'hcPreq'}
+    ];
+    const shortFields=[{id:'cTools',hid:'hcTools'},{id:'cAreas',hid:'hcAreas'}];
+    const invSel=document.getElementById('cInvSel');
+    let ok=true;
+    // Validate select
+    if(!invSel||!invSel.value){fErr(invSel,document.getElementById('hcInvSel'),true);ok=false;}
+    else{fErr(invSel,document.getElementById('hcInvSel'),false);
+      if(invSel.value==='Sim'){
+        const inv=document.getElementById('cInv');
+        const hinv=document.getElementById('hcInv');
+        if(!inv||inv.value.trim().length<100){fErr(inv,hinv,true);ok=false;}
+        else fErr(inv,hinv,false);
+      }
+    }
+    // Validate 100-char textareas
+    textFields.forEach(f=>{
+      const el=document.getElementById(f.id);
+      const hint=document.getElementById(f.hid);
+      if(!el) return;
+      if(el.value.trim().length<100){fErr(el,hint,true);ok=false;}
+      else fErr(el,hint,false);
+    });
+    // Validate short inputs
+    shortFields.forEach(f=>{
+      const el=document.getElementById(f.id);
+      const hint=document.getElementById(f.hid);
+      if(!el||!el.value.trim()){fErr(el,hint,true);ok=false;}
+      else fErr(el,hint,false);
+    });
+    if(!ok){sV('v4c','Preencha todos os campos obrigatórios.');return;}
+    hV('v4c');
+    S.page=4;showPg(4);return;
+  }
+
   if(p===4){submitData();return;}
 }
 
-function gBack(){if(S.page>0){S.page--;showPg(S.page);}}
+function gBack(){
+  if(S.page==='4c'||S.page===4&&document.querySelector('#p4case.on')){
+    S.page=3;showPg(3);return;
+  }
+  if(S.page>0){S.page--;showPg(S.page);}
+}
 function sV(id,msg){const e=document.getElementById(id);if(e){e.classList.add('on');const s=e.querySelector('span');if(s&&msg)s.textContent=msg;}}
 function hV(id){const e=document.getElementById(id);if(e)e.classList.remove('on');}
 
@@ -938,7 +1184,11 @@ function collectData(){
   const gv=id=>{const el=document.getElementById(id);return el?el.value||'':'';};
   const getChips=id=>[...document.getElementById(id).querySelectorAll('.chip.on')].map(c=>c.textContent).join(', ');
   const ts=new Date().toLocaleString('pt-BR');
-  const reg=gv('f_reg')+(gv('f_reg')==='Outro'&&gv('f_regOutro')?' ('+gv('f_regOutro')+')':'');
+  const regCode=gv('f_reg');
+  // Regional: envia o valor de exibição oficial (via REG_DISPLAY), preservando a lógica de "Outro" já existente.
+  // Fallback para o próprio código caso REG_DISPLAY não tenha a chave (defensivo; não deve ocorrer com as 5 opções atuais do <select>).
+  const reg=(REG_DISPLAY[regCode]||regCode)+(regCode==='Outro'&&gv('f_regOutro')?' ('+gv('f_regOutro')+')':'');
+  // base: objeto com propriedades nomeadas, mesmos nomes já usados pelo Portal em produção e esperados pelo trigger atual.
   const base={
     data_hora_local:ts,
     regional:reg,
@@ -961,6 +1211,7 @@ function collectData(){
       };
       const pxVal=gv('p'+i+'px')==='Outro'?(gv('p'+i+'pxOutro')||'Outro'):gv('p'+i+'px');
       const indicadorVal=gv('p'+i+'a')==='Outro'?(gv('p'+i+'aOutro')||'Outro'):gv('p'+i+'a');
+      const potVal=gv('p'+i+'pot');
       rows.push({
         ...base,
         possui_iniciativa:'Sim',
@@ -979,6 +1230,7 @@ function collectData(){
         responsavel:gv('p'+i+'re'),
         responsavel_email:gv('p'+i+'rem'),
         responsavel_whatsapp:gv('p'+i+'rw'),
+        // Campos do fluxo "sem iniciativa" — não se aplicam aqui, mantidos em branco (mesmo padrão do Portal em produção).
         motivos_chips:'',
         motivos_justificativa:'',
         impedimentos_chips:'',
@@ -986,7 +1238,22 @@ function collectData(){
         interesse_futuro:'',
         interesse_futuro_justificativa:'',
         apoio_chips:'',
-        apoio_justificativa:''
+        apoio_justificativa:'',
+        // ⚠️ CONFIRMAR — campos novos (autoavaliação de Potencial de Replicação + Case).
+        // Nomes propostos conforme Etapa 2 (snake_case da coluna SharePoint sugerida); ainda sem coluna criada e sem leitura pelo fluxo atual.
+        potencial_replicacao_franquia:potVal,
+        case_situacao_motivo:(potVal==='Alto'?gv('cSit'):''),
+        case_situacao_impacto:(potVal==='Alto'?gv('cImp'):''),
+        case_requer_investimento:(potVal==='Alto'?gv('cInvSel'):''),
+        case_investimentos_desc:(potVal==='Alto'?(gv('cInvSel')==='Sim'?gv('cInv'):'Não aplicável'):''),
+        case_como_implementado:(potVal==='Alto'?gv('cImpl'):''),
+        case_ferramentas_utilizadas:(potVal==='Alto'?gv('cTools'):''),
+        case_areas_envolvidas:(potVal==='Alto'?gv('cAreas'):''),
+        case_beneficios_obtidos:(potVal==='Alto'?gv('cBen'):''),
+        case_resultados_mensuraveis:(potVal==='Alto'?gv('cMens'):''),
+        case_cuidados_recomendados:(potVal==='Alto'?gv('cCuid'):''),
+        case_pre_requisito:(potVal==='Alto'?gv('cPreq'):''),
+        case_materiais_apoio:(potVal==='Alto'?gv('cMat'):'')
       });
     }
   } else {
@@ -1015,7 +1282,21 @@ function collectData(){
       interesse_futuro:S.fut||'',
       interesse_futuro_justificativa:gv('futJ'),
       apoio_chips:getChips('apoG'),
-      apoio_justificativa:gv('apoJ')
+      apoio_justificativa:gv('apoJ'),
+      // ⚠️ CONFIRMAR — campos de Case não se aplicam quando não há iniciativa; mantidos em branco.
+      potencial_replicacao_franquia:'',
+      case_situacao_motivo:'',
+      case_situacao_impacto:'',
+      case_requer_investimento:'',
+      case_investimentos_desc:'',
+      case_como_implementado:'',
+      case_ferramentas_utilizadas:'',
+      case_areas_envolvidas:'',
+      case_beneficios_obtidos:'',
+      case_resultados_mensuraveis:'',
+      case_cuidados_recomendados:'',
+      case_pre_requisito:'',
+      case_materiais_apoio:''
     });
   }
   return rows;
@@ -1023,7 +1304,7 @@ function collectData(){
 
 
 async function submitData(){
-  const WEBHOOK_URL='https://defaulte93279240f9745ba871f4a124f3343.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/23/workflows/91a1a2c5543d4bbaa0d044cb27b1729b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7hWOeA_XfiNDECKY3xW1lNg2c8RhT4fALzEOGrQR-Bs';
+  const WEBHOOK_URL='https://defaulte93279240f9745ba871f4a124f3343.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a9f776e01c414e27b203cf036c2c8a09/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ORJZwUhJq3j9h9n_aGHKTkhNR75bkzMxEsU_78rloR8';
   const rows=collectData();
   document.getElementById('subOverlay').classList.add('on');
   try{
@@ -1033,6 +1314,77 @@ async function submitData(){
 }
 
 // ─── REGIONAL / ESTADOS ─────────────────────────────────────────────────────
+const FRANQUIAS_MAP={"CENTRO SUL": ["ALVORADA", "APUCARANA", "ARAUCARIA", "ARIQUEMES", "BALNEARIO CAMBORIU", "BENTO GONCALVES", "BLUMENAU", "BRUSQUE", "CACADOR", "CACERES", "CACHOEIRINHA", "CACOAL", "CAMPO GRANDE", "CAMPO LARGO", "CAMPO MOURAO", "CANOAS", "CASCAVEL", "CASTRO", "CAXIAS DO SUL", "CHAPECO", "CIANORTE", "COLOMBO", "CONCORDIA", "CORNELIO PROCOPIO", "CRICIUMA", "CUIABA", "CURITIBA CENTRO", "CURITIBA PINHEIRINHO", "CURITIBA PORTAO", "DOURADOS", "ERECHIM", "FLORIANOPOLIS", "FOZ DO IGUACU", "FRANCISCO BELTRAO", "GRAVATAI", "GUAIBA", "GUARAPUAVA", "ITAJAI", "JARAGUA DO SUL", "JI PARANA", "JOINVILLE", "LAGES", "LAJEADO", "LONDRINA", "MARINGA", "MONTENEGRO", "NOVO HAMBURGO", "PARANAGUA", "PARANAVAI", "PAROBE", "PASSO FUNDO", "PATO BRANCO", "PELOTAS", "PIRAQUARA", "PONTA GROSSA", "PONTA PORA", "PORTO ALEGRE CENTRO", "PORTO ALEGRE NORTE", "PORTO ALEGRE SUL", "PORTO VELHO", "RIO GRANDE", "RONDONOPOLIS", "SANTA CRUZ DO SUL", "SANTA MARIA", "SAO BENTO DO SUL", "SAO JOSE", "SAO JOSE DOS PINHAIS", "SAO LEOPOLDO", "SINOP", "SORRISO", "TANGARA DA SERRA", "TOLEDO", "TRES LAGOAS", "TUBARAO", "UMUARAMA", "VARZEA GRANDE", "VIAMAO", "VILHENA"], "COSTA LESTE": ["ALAGOINHAS", "ANGRA DOS REIS", "ARACAJU", "ARACRUZ", "ARAPIRACA", "ARARUAMA", "BARRA DE SAO FRANCISCO", "BARRA DO PIRAI", "BARREIRAS", "BELFORD ROXO", "CABO FRIO", "CACHOEIRO DE ITAPEMIRIM", "CAMACARI", "CAMPOS DOS GOYTACAZES", "CARIACICA", "COLATINA", "CRUZ DAS ALMAS", "DUQUE DE CAXIAS", "ESTANCIA", "EUNAPOLIS", "FEIRA DE SANTANA", "GUANAMBI", "GUARAPARI", "GURIRI", "ILHEUS", "ITABAIANA", "ITABORAI", "ITABUNA", "ITAGUAI", "ITAPERUNA", "JACOBINA", "JEQUIE", "JUAZEIRO", "LAGARTO", "LAURO DE FREITAS", "LINHARES", "MACAE", "MACEIO CENTRO", "MACEIO NORTE", "MAGE", "MARICA", "NITEROI", "NOSSA SENHORA DO SOCORRO", "NOVA FRIBURGO", "NOVA IGUACU", "NOVA VENECIA", "PALMEIRA DOS INDIOS", "PAULO AFONSO", "PETROPOLIS", "PORTO SEGURO", "QUEIMADOS", "RESENDE", "RIO DAS OSTRAS", "RJ BANGU", "RJ CAMPO GRANDE", "RJ CENTRO ZONA SUL", "RJ ILHA DO GOVERNADOR", "RJ IRAJA", "RJ JACAREPAGUA", "RJ MADUREIRA", "RJ MEIER", "RJ PENHA", "RJ REALENGO", "RJ RECREIO", "RJ SANTA CRUZ", "SALVADOR CABULA", "SALVADOR CENTRO", "SALVADOR LARGO DO TANQUE", "SALVADOR PARIPE", "SANTO AMARO", "SANTO ANTONIO DE JESUS", "SAO GONCALO", "SAO JOAO DE MERITI", "SERRA", "SERRA SEDE", "SERRINHA", "TEIXEIRA DE FREITAS", "TERESOPOLIS", "TRES RIOS", "VALENCA", "VALENCA RJ", "VIANA", "VILA VELHA", "VITORIA", "VITORIA DA CONQUISTA", "VOLTA REDONDA"], "EQUATORIAL": ["ABAETETUBA", "ACARAU", "ANANINDEUA", "AQUIRAZ", "ARACATI", "BALSAS", "BARCARENA", "BELEM BENGUI", "BELEM CENTRO", "BELO JARDIM", "BOA VISTA", "BRAGANCA", "CABO DE SANTO AGOSTINHO", "CAMARAGIBE", "CAMOCIM", "CAMPINA GRANDE", "CANAA DOS CARAJAS", "CARIRI", "CARUARU", "CASTANHAL", "CAUCAIA", "CAXIAS", "FORTALEZA CENTRO", "FORTALEZA REG V", "FORTALEZA REG VI", "GARANHUNS", "GOIANA", "GRAVATA", "GUARABIRA", "IGUATU", "IMPERATRIZ", "ITAPIPOCA", "JABOATAO DOS GUARARAPES", "JOAO PESSOA NORTE", "JOAO PESSOA SUL", "LIMOEIRO", "MACAIBA", "MACAPA", "MANAUS CENTRO", "MANAUS NORTE", "MARABA", "MARACANAU", "MOSSORO", "NATAL", "OLINDA", "OURICURI", "PACAJUS", "PALMARES", "PARAGOMINAS", "PARAUAPEBAS", "PARINTINS", "PARNAIBA", "PARNAMIRIM", "PATOS", "PAULISTA", "PETROLINA", "PICOS", "QUIXADA", "RECIFE AFOGADOS", "RECIFE CENTRO", "RECIFE ENCRUZILHADA", "RIO BRANCO", "RUSSAS", "SANTA CRUZ DO CAPIBARIBE", "SANTAREM", "SAO JOSE DE RIBAMAR", "SAO LUIS", "SAO LUIS CENTRO", "SAPE", "SERRA TALHADA", "SOBRAL", "SURUBIM", "TERESINA CENTRO", "TERESINA LESTE", "TIMBAUBA", "TUCURUI", "VITORIA DE SANTO ANTAO"], "INTERIOR": ["AGUAS LINDAS", "AMERICANA", "AMPARO", "ANAPOLIS", "APARECIDA DE GOIANIA", "ARACATUBA", "ARAGUAINA", "ARARAQUARA", "ARARAS", "ASSIS", "AVARE", "BARRETOS", "BATATAIS", "BAURU", "BEBEDOURO", "BERTIOGA", "BIRIGUI", "BOTUCATU", "CALDAS NOVAS", "CAMPINAS CENTRO NORTE", "CAMPINAS NOROESTE", "CAMPINAS SUDOESTE", "CAMPINAS SUL", "CATALAO", "CATANDUVA", "CEILANDIA", "CERQUILHO", "COSMOPOLIS", "CRUZEIRO", "FERNANDOPOLIS", "FORMOSA", "FRANCA", "FRANCISCO MORATO", "FRANCO DA ROCHA", "GAMA", "GOIANIA CENTRO NORTE", "GOIANIA NOROESTE", "GOIANIA SUL", "GURUPI DIGITAL", "HORTOLANDIA", "IBITINGA", "IBIUNA", "INDAIATUBA", "ITANHAEM", "ITAPETININGA", "ITAPEVA", "ITU", "ITUMBIARA", "JATAI", "JAU", "JUNDIAI", "LEME", "LIMEIRA", "LINS", "MARILIA", "MOCOCA", "MOGI GUACU", "OLIMPIA DIGITAL", "OURINHOS", "PALMAS", "PIRACICABA", "PIRASSUNUNGA", "PRAIA GRANDE", "PRESIDENTE PRUDENTE", "REGISTRO", "RIBEIRAO PRETO", "RIO CLARO", "RIO VERDE", "SALTO", "SAMAMBAIA SUL", "SANTA BARBARA DOESTE", "SANTOS", "SAO CARLOS", "SAO JOAO DA BOA VISTA", "SAO JOAQUIM DA BARRA", "SAO JOSE DO RIO PRETO", "SAO ROQUE", "SAO SEBASTIAO", "SAO VICENTE", "SERTAOZINHO", "SOBRADINHO", "SOROCABA", "SUMARE", "TAGUATINGA", "TAQUARITINGA", "TATUI", "TUPA", "VALINHOS", "VALPARAISO DE GOIAS", "VARZEA PAULISTA", "VOTORANTIM", "VOTUPORANGA"], "SAO PAULO MINAS": ["ALFENAS", "ARAGUARI", "ARAXA", "ARUJA", "ATIBAIA", "BARBACENA", "BARUERI", "BETIM", "BH BARREIRO", "BH CENTRO SUL", "BH OESTE", "BH VENDA NOVA", "BRAGANCA PAULISTA", "CARAGUATATUBA", "CARAPICUIBA", "CARATINGA", "CATAGUASES", "CONSELHEIRO LAFAIETE", "CONTAGEM", "COTIA", "CURVELO", "DIADEMA", "DIVINOPOLIS", "EMBU DAS ARTES", "FERRAZ DE VASCONCELOS", "FORMIGA", "GUARATINGUETA", "GUARULHOS", "GUARULHOS - PIMENTAS", "IBIRITE", "ITAJUBA", "ITAPECERICA DA SERRA", "ITAPEVI", "ITAQUAQUECETUBA", "ITAUNA", "ITUIUTABA", "JACAREI", "JANDIRA", "JUIZ DE FORA", "LAVRAS", "MANHUACU", "MARIANA", "MAUA", "MOGI DAS CRUZES", "MONTES CLAROS", "MURIAE", "NOVA LIMA CENTRO", "NOVA SERRANA", "OSASCO", "PARA DE MINAS", "PARACATU", "PASSOS", "PATOS DE MINAS", "PATROCINIO", "POCOS DE CALDAS", "PONTE NOVA", "POUSO ALEGRE", "RIBEIRAO DAS NEVES", "SABARA", "SANTA LUZIA", "SANTO ANDRE", "SAO BERNARDO DO CAMPO", "SAO JOAO DEL REI", "SAO JOSE DOS CAMPOS", "SETE LAGOAS", "SP CAMPO LIMPO", "SP CAPELA DO SOCORRO", "SP CASA VERDE", "SP CIDADE ADEMAR", "SP FREGUESIA DO O", "SP GUAIANASES", "SP IPIRANGA", "SP ITAIM PAULISTA", "SP ITAQUERA", "SP JABAQUARA", "SP MBOI MIRIM", "SP PARELHEIROS", "SP PENHA", "SP PINHEIROS", "SP PIRITUBA", "SP SAO MATEUS", "SP SAO MIGUEL PAULISTA", "SP SAPOPEMBA", "SP TATUAPE", "SP TUCURUVI", "SP VILA MARIA", "SUZANO", "TABOAO DA SERRA", "TAUBATE", "TEOFILO OTONI", "TRES CORACOES", "UBA", "UBERABA", "UBERLANDIA", "VALE DO ACO", "VARGINHA", "VESPASIANO", "VICOSA"]};
+
+const REG_DISPLAY={'SAO PAULO MINAS':'Regional SPMG','COSTA LESTE':'Regional Costa Leste','INTERIOR':'Regional Interior','CENTRO SUL':'Regional Centro Sul','EQUATORIAL':'Regional Equatorial'};
+
+// Autocomplete state
+let acSelected=false;
+let acCurrent=-1;
+
+function onRegiao(){
+  const reg=document.getElementById('f_reg').value;
+  // Reset franquia selection
+  document.getElementById('f_nome').value='';
+  document.getElementById('f_nome_input').value='';
+  acSelected=false;
+  document.getElementById('acList').style.display='none';
+  // Also populate f_est (Estado) via existing logic
+  const sel=document.getElementById('f_est');
+  if(sel){
+    sel.innerHTML='<option value="">Selecione...</option>';
+    if(TODOS_ESTADOS){
+      TODOS_ESTADOS.forEach(e=>{const o=document.createElement('option');o.value=e;o.textContent=e;sel.appendChild(o);});
+    }
+  }
+}
+
+function acSearch(q){
+  const reg=document.getElementById('f_reg').value;
+  const list=document.getElementById('acList');
+  if(!reg){list.innerHTML='<div class="ac-none">Selecione a Regional primeiro.</div>';list.style.display='block';return;}
+  const franquias=(FRANQUIAS_MAP[reg]||[]);
+  const term=q.trim().toUpperCase();
+  // If query matches current selection exactly, keep as valid
+  const hidden=document.getElementById('f_nome');
+  if(hidden.value && document.getElementById('f_nome_input').value.toUpperCase()===hidden.value.toUpperCase()){
+    list.style.display='none';return;
+  }
+  acSelected=false;hidden.value='';
+  const filtered=term?franquias.filter(f=>f.includes(term)):franquias.slice(0,50);
+  if(!filtered.length){list.innerHTML='<div class="ac-none">Nenhuma franquia encontrada.</div>';list.style.display='block';return;}
+  acCurrent=-1;
+  list.innerHTML=filtered.map((f,i)=>{
+    const hl=term?f.replace(new RegExp('('+term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<strong>$1</strong>'):f;
+    return `<div class="ac-item" data-val="${f}" onclick="acPick('${f}')">${hl}</div>`;
+  }).join('');
+  list.style.display='block';
+}
+
+function acPick(val){
+  document.getElementById('f_nome').value=val;
+  document.getElementById('f_nome_input').value=val;
+  document.getElementById('acList').style.display='none';
+  acSelected=true;
+  fErr(document.getElementById('f_nome_input'),document.getElementById('hf_nome'),false);
+}
+
+function acKey(e){
+  const list=document.getElementById('acList');
+  const items=[...list.querySelectorAll('.ac-item')];
+  if(!items.length) return;
+  if(e.key==='ArrowDown'){e.preventDefault();acCurrent=Math.min(acCurrent+1,items.length-1);items.forEach((it,i)=>it.classList.toggle('ac-active',i===acCurrent));}
+  else if(e.key==='ArrowUp'){e.preventDefault();acCurrent=Math.max(acCurrent-1,0);items.forEach((it,i)=>it.classList.toggle('ac-active',i===acCurrent));}
+  else if(e.key==='Enter'&&acCurrent>=0){e.preventDefault();acPick(items[acCurrent].dataset.val);}
+  else if(e.key==='Escape'){list.style.display='none';}
+}
+
+// Close ac-list on outside click
+document.addEventListener('click',function(e){
+  const wrap=document.getElementById('acWrap');
+  if(wrap&&!wrap.contains(e.target))document.getElementById('acList').style.display='none';
+});
+
 const ESTADOS_MAP={
   'Regional SPMG':        ['SP','MG'],
   'Regional Costa Leste': ['RJ','ES','BA','SE','AL','PE','PB','RN','CE','PI','MA','PA','AP','AM','RR','RO','AC','TO'],
