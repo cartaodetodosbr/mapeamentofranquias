@@ -1304,13 +1304,32 @@ function collectData(){
 
 
 async function submitData(){
-  const WEBHOOK_URL='https://defaulte93279240f9745ba871f4a124f3343.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a9f776e01c414e27b203cf036c2c8a09/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ORJZwUhJq3j9h9n_aGHKTkhNR75bkzMxEsU_78rloR8';
+  const WEBHOOK_URL='https://defaulte93279240f9745ba871f4a124f3343.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/23/workflows/91a1a2c5543d4bbaa0d044cb27b1729b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7hWOeA_XfiNDECKY3xW1lNg2c8RhT4fALzEOGrQR-Bs';
   const rows=collectData();
-  document.getElementById('subOverlay').classList.add('on');
+  const overlay=document.getElementById('subOverlay');
+  // Elementos reaproveitados do próprio overlay já existente no HTML (nenhum elemento novo é criado; nenhum ID novo é adicionado).
+  const box=overlay.querySelector('.submit-box');
+  const titleEl=box.querySelector('h3');
+  const descEl=box.querySelector('p');
+  const spinEl=box.querySelector('.spin');
+  // Garante que o overlay volte ao estado "enviando" a cada nova tentativa (caso a tentativa anterior tenha terminado em erro).
+  titleEl.textContent='Enviando dados...';
+  descEl.textContent='Registrando suas informações. Aguarde um momento.';
+  spinEl.style.display='';
+  overlay.onclick=null;
+  overlay.classList.add('on');
   try{
-    await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rows})});
-  } catch(e){console.warn('Submit error (ignorado com no-cors removido):',e);}
-  setTimeout(()=>{document.getElementById('subOverlay').classList.remove('on');S.page=5;showPg(5);},1800);
+    const resp=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rows})});
+    if(!resp.ok){throw new Error('Resposta HTTP '+resp.status);}
+    setTimeout(()=>{overlay.classList.remove('on');S.page=5;showPg(5);},1800);
+  } catch(e){
+    console.warn('Erro ao enviar o cadastro:',e);
+    spinEl.style.display='none';
+    titleEl.textContent='Não foi possível enviar';
+    descEl.textContent='Verifique sua conexão e tente novamente. Nenhum dado preenchido foi perdido.';
+    // Fecha o aviso ao clicar; o usuário permanece na mesma etapa do formulário, com os dados intactos, e pode tentar reenviar.
+    overlay.onclick=()=>{overlay.classList.remove('on');};
+  }
 }
 
 // ─── REGIONAL / ESTADOS ─────────────────────────────────────────────────────
