@@ -550,9 +550,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
       <div id="cInvDiv" style="display:none;margin-top:.75rem">
         <label>Quais investimentos são necessários? <span class="req">*</span></label>
-        <textarea id="cInv" placeholder="Descreva os investimentos necessários..." oninput="charCount(this,'hcInv','ccInv')"></textarea>
-        <div class="char-hint" id="ccInv">0 / mínimo 100 caracteres</div>
-        <span class="err-hint" id="hcInv">Digite pelo menos 100 caracteres para continuar.</span>
+        <textarea id="cInv" placeholder="Descreva os investimentos necessários..."></textarea>
+        <span class="err-hint" id="hcInv">Campo obrigatório.</span>
       </div>
     </div>
     <div class="case-block">
@@ -577,8 +576,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <span class="err-hint" id="hcBen">Digite pelo menos 100 caracteres para continuar.</span>
       </div>
       <div class="fc">
-        <label>Resultados mensuráveis <span style="font-size:.75rem;color:var(--gm);font-weight:400">(opcional)</span></label>
+        <label>Resultados mensuráveis <span class="req">*</span></label>
         <textarea id="cMens" placeholder="Ex.: redução de 30% no tempo de consolidação, aumento de 15% nas vendas..."></textarea>
+        <span class="err-hint" id="hcMens">Campo obrigatório.</span>
       </div>
     </div>
     <div class="case-block">
@@ -591,9 +591,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
       <div class="fc">
         <label>Existe algum pré-requisito importante? <span class="req">*</span></label>
-        <textarea id="cPreq" placeholder="Ex.: acesso ao Power BI, ter um responsável de TI, possuir determinado sistema..." oninput="charCount(this,'hcPreq','ccPreq')"></textarea>
-        <div class="char-hint" id="ccPreq">0 / mínimo 100 caracteres</div>
-        <span class="err-hint" id="hcPreq">Digite pelo menos 100 caracteres para continuar.</span>
+        <textarea id="cPreq" placeholder="Ex.: acesso ao Power BI, ter um responsável de TI, possuir determinado sistema..."></textarea>
+        <span class="err-hint" id="hcPreq">Campo obrigatório.</span>
       </div>
     </div>
     <div class="case-block">
@@ -867,7 +866,7 @@ function mkAcc(i){
     <div class="ab">
       <div class="fr"><div class="fg"><label>Nome do Projeto <span class="req">*</span></label><input id="p${i}n" oninput="updT(${i})" placeholder="Ex.: Automação da emissão de relatórios de RH"><span class="err-hint" id="hp${i}n">Campo obrigatório.</span></div>
       <div class="fg"><label>Categoria <span class="req">*</span></label><select id="p${i}c"><option value="">Selecione...</option>${cats.map(c=>`<option>${c}</option>`).join('')}</select><span class="err-hint" id="hp${i}c">Campo obrigatório.</span></div></div>
-      <div class="fr s1"><div class="fg"><label>Objetivo do Projeto/Iniciativa <span class="req">*</span></label><textarea id="p${i}o" placeholder="Detalhe ao máximo o objetivo desta iniciativa: o que está sendo feito, qual problema resolve, como impacta o negócio e quais resultados são esperados. (mínimo 100 caracteres)" minlength="100" style="min-height:90px"></textarea><span class="err-hint" id="hp${i}o">Campo obrigatório — mínimo 100 caracteres.</span></div></div>
+      <div class="fr s1"><div class="fg"><label>Objetivo do Projeto/Iniciativa <span class="req">*</span></label><textarea id="p${i}o" placeholder="Detalhe ao máximo o objetivo desta iniciativa: o que está sendo feito, qual problema resolve, como impacta o negócio e quais resultados são esperados. (mínimo 100 caracteres)" minlength="100" style="min-height:90px" oninput="charCount(this,'hp${i}o','cop${i}o')"></textarea><div class="char-hint" id="cop${i}o">0 / mínimo 100 caracteres</div><span class="err-hint" id="hp${i}o">Campo obrigatório — mínimo 100 caracteres.</span></div></div>
       <div class="fr"><div class="fg"><label>Status Atual <span class="req">*</span></label><select id="p${i}s"><option value="">Selecione...</option>${stats.map(s=>`<option>${s}</option>`).join('')}</select><span class="err-hint" id="hp${i}s">Campo obrigatório.</span></div>
       <div class="fg"><label>Indicador Operacional Relacionado <span class="req">*</span></label>
         <select id="p${i}a" onchange="togIndicador('p${i}a','p${i}aOutroDiv')">
@@ -1098,9 +1097,9 @@ function gNext(){
     const textFields=[
       {id:'cSit',hid:'hcSit'},{id:'cImp',hid:'hcImp'},
       {id:'cImpl',hid:'hcImpl'},{id:'cBen',hid:'hcBen'},
-      {id:'cCuid',hid:'hcCuid'},{id:'cPreq',hid:'hcPreq'}
+      {id:'cCuid',hid:'hcCuid'}
     ];
-    const shortFields=[{id:'cTools',hid:'hcTools'},{id:'cAreas',hid:'hcAreas'}];
+    const shortFields=[{id:'cTools',hid:'hcTools'},{id:'cAreas',hid:'hcAreas'},{id:'cPreq',hid:'hcPreq'},{id:'cMens',hid:'hcMens'}];
     const invSel=document.getElementById('cInvSel');
     let ok=true;
     // Validate select
@@ -1109,7 +1108,7 @@ function gNext(){
       if(invSel.value==='Sim'){
         const inv=document.getElementById('cInv');
         const hinv=document.getElementById('hcInv');
-        if(!inv||inv.value.trim().length<100){fErr(inv,hinv,true);ok=false;}
+        if(!inv||!inv.value.trim()){fErr(inv,hinv,true);ok=false;}
         else fErr(inv,hinv,false);
       }
     }
