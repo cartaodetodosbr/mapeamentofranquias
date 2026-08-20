@@ -241,6 +241,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .ac-item strong{color:var(--p)}
 .ac-none{padding:9px 14px;font-size:.88rem;color:var(--gm);font-style:italic}
 .ac-wrap input.err{border-color:var(--danger,#c0392b)}
+.ac-manual-link{background:none;border:none;padding:0;margin-top:7px;font-size:.82rem;color:var(--t);font-weight:700;cursor:pointer;text-decoration:underline;text-align:left}
+.ac-manual-link:hover{color:var(--p)}
+.ac-manual-box{margin-top:.5rem;display:flex;gap:8px;align-items:flex-start}
+.ac-manual-box input{flex:1}
+.ac-manual-cancel{background:none;border:none;padding:8px 2px 0;font-size:.78rem;color:var(--gm);cursor:pointer;text-decoration:underline;white-space:nowrap}
 .pot-opts{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .pot-opt{border:1.5px solid var(--gl);border-radius:var(--r);padding:12px 16px;cursor:pointer;transition:border-color .15s,background .15s}
 .pot-opt:hover{border-color:var(--t);background:var(--tp)}
@@ -380,7 +385,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <input type="hidden" id="f_nome">
           <div class="ac-list" id="acList" style="display:none"></div>
         </div>
-        <span class="err-hint" id="hf_nome">Selecione uma franquia da lista para continuar.</span>
+        <button type="button" class="ac-manual-link" id="acManualToggle" onclick="toggleManualFranquia()">Não encontrou sua franquia? Digite o nome abaixo.</button>
+        <div class="ac-manual-box" id="acManualBox" style="display:none">
+          <input id="f_nome_manual" placeholder="Digite o nome da franquia" oninput="onManualFranquiaInput(this.value)">
+          <button type="button" class="ac-manual-cancel" onclick="toggleManualFranquia()">Voltar para a busca</button>
+        </div>
+        <span class="err-hint" id="hf_nome">Selecione uma franquia da lista ou digite o nome da franquia para continuar.</span>
       </div>
       <div class="fg">
         <label>Área de Negócio <span class="req">*</span></label>
@@ -984,13 +994,13 @@ function gNext(){
       const est=document.getElementById('f_est');
       if(!est.value){fErr(est,document.getElementById('hf_est'),true);ok=false;}else fErr(est,document.getElementById('hf_est'),false);
     }
-    // Validate autocomplete franquia (must be selected from list)
+    // Validate franquia: selecionada da lista (acSelected via acPick) OU digitada manualmente (acSelected via onManualFranquiaInput)
     const nomeHidden=document.getElementById('f_nome');
-    const nomeInput=document.getElementById('f_nome_input');
+    const nomeInput=manualFranquia?document.getElementById('f_nome_manual'):document.getElementById('f_nome_input');
     const nomeHint=document.getElementById('hf_nome');
     if(!nomeHidden.value||!acSelected){
       fErr(nomeInput,nomeHint,true);
-      nomeHint.textContent='Selecione uma franquia da lista para continuar.';
+      nomeHint.textContent='Selecione uma franquia da lista ou digite o nome da franquia para continuar.';
       ok=false;
     } else fErr(nomeInput,nomeHint,false);
     [['f_tipo','hf_tipo'],['f_tempo','hf_tempo']].forEach(([fid,hid])=>{
@@ -1339,6 +1349,42 @@ const REG_DISPLAY={'SAO PAULO MINAS':'Regional SPMG','COSTA LESTE':'Regional Cos
 // Autocomplete state
 let acSelected=false;
 let acCurrent=-1;
+// Modo de digitação manual (franquia não encontrada na lista)
+let manualFranquia=false;
+
+function toggleManualFranquia(){
+  manualFranquia=!manualFranquia;
+  const searchWrap=document.getElementById('acWrap');
+  const toggleBtn=document.getElementById('acManualToggle');
+  const manualBox=document.getElementById('acManualBox');
+  const hidden=document.getElementById('f_nome');
+  const hint=document.getElementById('hf_nome');
+  // Ao alternar (em qualquer direção), limpa o valor atual para evitar ambiguidade entre os dois caminhos
+  acSelected=false;
+  hidden.value='';
+  document.getElementById('f_nome_input').value='';
+  document.getElementById('f_nome_manual').value='';
+  document.getElementById('acList').style.display='none';
+  if(manualFranquia){
+    searchWrap.style.display='none';
+    toggleBtn.style.display='none';
+    manualBox.style.display='flex';
+    document.getElementById('f_nome_manual').focus();
+  } else {
+    searchWrap.style.display='';
+    toggleBtn.style.display='';
+    manualBox.style.display='none';
+  }
+  fErr(document.getElementById('f_nome_input'),hint,false);
+  fErr(document.getElementById('f_nome_manual'),hint,false);
+}
+
+function onManualFranquiaInput(val){
+  const trimmed=val.trim();
+  document.getElementById('f_nome').value=trimmed;
+  acSelected=!!trimmed;
+  if(trimmed) fErr(document.getElementById('f_nome_manual'),document.getElementById('hf_nome'),false);
+}
 
 function onRegiao(){
   const reg=document.getElementById('f_reg').value;
