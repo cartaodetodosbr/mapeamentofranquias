@@ -821,10 +821,9 @@ function gEdit(n){S.page=n;showPg(n);document.getElementById('bNext').innerHTML=
 
 function collectData(){
   const gv=id=>{const el=document.getElementById(id);return el?el.value||'':'';};
-  const getChips=id=>[...document.getElementById(id).querySelectorAll('.chip.on')].map(c=>c.textContent).join(', ');
+  const getChips=id=>{const el=document.getElementById(id);return el?[...el.querySelectorAll('.chip.on')].map(c=>c.textContent).join(', '):''};
   const ts=new Date().toLocaleString('pt-BR');
-  const reg=gv('f_reg')+(gv('f_reg')==='Outro'&&gv('f_regOutro')?' ('+gv('f_regOutro')+')':'');
-  const base=[ts,reg,gv('f_est'),gv('f_cid'),gv('f_nome'),gv('f_tempo'),gv('maturidadeDigital')];
+  const reg=gv('f_reg')==='Outro'?(gv('f_regOutro')||'Outro'):gv('f_reg');
   const rows=[];
   if(S.hasInit){
     const n=S.qty===5?5:S.qty;
@@ -836,36 +835,104 @@ function collectData(){
         return chips[idx]?[...chips[idx].querySelectorAll('.chip.on')].map(c=>c.textContent).join(', '):'';
       };
       const pxVal=gv('p'+i+'px')==='Outro'?(gv('p'+i+'pxOutro')||'Outro'):gv('p'+i+'px');
-      // potencial
       const potEl=document.querySelector('#acc'+i+' .pot-opts .pot-opt.sel');
       const potVal=potEl?potEl.dataset.val:'';
-      // case fields (only when potencial=Alto)
-      const cSit =gv('cSit'); const cImp=gv('cImp');
-      const cInvSel=gv('cInvSel'); const cInv=gv('cInv');
-      const cImpl=gv('cImpl'); const cTools=gv('cTools');
-      const cAreas=gv('cAreas'); const cBen=gv('cBen');
-      const cMens=gv('cMens'); const cCuid=gv('cCuid');
-      const cPreq=gv('cPreq'); const cMat=gv('cMat');
-      rows.push([...base,'Sim',
-        gv('p'+i+'n'),gv('p'+i+'c'),gv('p'+i+'o'),
-        gv('p'+i+'s'),gv('p'+i+'a'),
-        getAccChips(0),gv('p'+i+'fd'),
-        getAccChips(1),gv('p'+i+'id'),
-        getAccChips(2),gv('p'+i+'bd'),
-        pxVal,gv('p'+i+'re'),gv('p'+i+'rem'),gv('p'+i+'rw'),
-        '','','','','','','','',
-        gv('f_tipo'),potVal,
-        cSit,cImp,cInvSel,cInv,cImpl,cTools,cAreas,cBen,cMens,cCuid,cPreq,cMat
-      ]);
+      rows.push({
+        data_hora_local: ts,
+        regional: reg,
+        estado: gv('f_est'),
+        cidade: gv('f_cid'),
+        nome_franquia: gv('f_nome'),
+        tipo_franquia: gv('f_tipo'),
+        tempo_operacao: gv('f_tempo'),
+        maturidade_digital: gv('maturidadeDigital'),
+        possui_iniciativa: 'Sim',
+        nome_projeto: gv('p'+i+'n'),
+        categoria: gv('p'+i+'c'),
+        objetivo: gv('p'+i+'o'),
+        status_atual: gv('p'+i+'s'),
+        indicador_operacional: gv('p'+i+'a'),
+        ferramentas_chips: getAccChips(0),
+        ferramentas_desc: gv('p'+i+'fd'),
+        indicadores_chips: getAccChips(1),
+        indicadores_desc: gv('p'+i+'id'),
+        beneficios_chips: getAccChips(2),
+        beneficios_desc: gv('p'+i+'bd'),
+        proximo_estagio: pxVal,
+        responsavel: gv('p'+i+'re'),
+        responsavel_email: gv('p'+i+'rem'),
+        responsavel_whatsapp: gv('p'+i+'rw'),
+        motivos_chips: '',
+        motivos_justificativa: '',
+        impedimentos_chips: '',
+        impedimentos_justificativa: '',
+        interesse_futuro: '',
+        interesse_futuro_justificativa: '',
+        apoio_chips: '',
+        apoio_justificativa: '',
+        potencial_replicacao_franquia: potVal,
+        case_situacao_motivo: gv('cSit'),
+        case_situacao_impacto: gv('cImp'),
+        case_requer_investimento: gv('cInvSel'),
+        case_investimentos_desc: gv('cInv'),
+        case_como_implementado: gv('cImpl'),
+        case_ferramentas_utilizadas: gv('cTools'),
+        case_areas_envolvidas: gv('cAreas'),
+        case_beneficios_obtidos: gv('cBen'),
+        case_resultados_mensuraveis: gv('cMens'),
+        case_cuidados_recomendados: gv('cCuid'),
+        case_pre_requisito: gv('cPreq'),
+        case_materiais_apoio: gv('cMat')
+      });
     }
   } else {
-    rows.push([...base,'Não',
-      '','','','','','','','','','','','','','','',
-      getChips('mtvG'),gv('mtvJ'),
-      getChips('impG'),gv('impJ'),
-      S.fut||'',gv('futJ'),
-      getChips('apoG'),gv('apoJ')
-    ]);
+    rows.push({
+      data_hora_local: ts,
+      regional: reg,
+      estado: gv('f_est'),
+      cidade: gv('f_cid'),
+      nome_franquia: gv('f_nome'),
+      tipo_franquia: gv('f_tipo'),
+      tempo_operacao: gv('f_tempo'),
+      maturidade_digital: gv('maturidadeDigital'),
+      possui_iniciativa: 'Não',
+      nome_projeto: '',
+      categoria: '',
+      objetivo: '',
+      status_atual: '',
+      indicador_operacional: '',
+      ferramentas_chips: '',
+      ferramentas_desc: '',
+      indicadores_chips: '',
+      indicadores_desc: '',
+      beneficios_chips: '',
+      beneficios_desc: '',
+      proximo_estagio: '',
+      responsavel: '',
+      responsavel_email: '',
+      responsavel_whatsapp: '',
+      motivos_chips: getChips('mtvG'),
+      motivos_justificativa: gv('mtvJ'),
+      impedimentos_chips: getChips('impG'),
+      impedimentos_justificativa: gv('impJ'),
+      interesse_futuro: S.fut||'',
+      interesse_futuro_justificativa: gv('futJ'),
+      apoio_chips: getChips('apoG'),
+      apoio_justificativa: gv('apoJ'),
+      potencial_replicacao_franquia: '',
+      case_situacao_motivo: '',
+      case_situacao_impacto: '',
+      case_requer_investimento: '',
+      case_investimentos_desc: '',
+      case_como_implementado: '',
+      case_ferramentas_utilizadas: '',
+      case_areas_envolvidas: '',
+      case_beneficios_obtidos: '',
+      case_resultados_mensuraveis: '',
+      case_cuidados_recomendados: '',
+      case_pre_requisito: '',
+      case_materiais_apoio: ''
+    });
   }
   return rows;
 }
